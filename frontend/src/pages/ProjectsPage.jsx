@@ -7,12 +7,19 @@ export default function ProjectsPage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
+  const user =
+    JSON.parse(localStorage.getItem('user'));
+
+  const userEmail = user?.email || 'guest';
+
   useEffect(() => {
     const stored =
-      JSON.parse(localStorage.getItem('projects')) || [];
+      JSON.parse(
+        localStorage.getItem(`projects_${userEmail}`)
+      ) || [];
 
     setProjects(stored);
-  }, []);
+  }, [userEmail]);
 
   const createProject = () => {
     if (!name) return;
@@ -21,12 +28,13 @@ export default function ProjectsPage() {
       id: Date.now(),
       name,
       description,
+      owner: userEmail,
     };
 
     const updated = [...projects, newProject];
 
     localStorage.setItem(
-      'projects',
+      `projects_${userEmail}`,
       JSON.stringify(updated)
     );
 
@@ -57,6 +65,8 @@ export default function ProjectsPage() {
             <h2>{project.name}</h2>
 
             <p>{project.description}</p>
+
+            <small>{project.owner}</small>
           </div>
         ))}
       </div>
